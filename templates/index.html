@@ -11,25 +11,34 @@
 <body>
   <div id="app">
     <el-row>
-      <el-col :span="8" v-for="(info, host) of gpu_data">
+      <el-col :span="6" v-for="(info, host) of gpu_data">
         <el-card class="gpu_card">
           <div class="gpu_infos">
             <h2>{{ info.host }}</h2>
-            <p>{{ info.ip }}</p>
             <p class="time">{{ info._date }}</p>
           </div>
           <div v-for="(gpu, gpu_index) of info.gpu_info" class="gpu_info">
-            <el-progress :percentage="gpu.percentage" status="text">cuda:{{ gpu_index }} - {{ gpu.status }}</el-progress>
+            GPU{{gpu_index}}: {{gpu.name}}<br>
+            <div class="box">
+              <div class="box_left">
+                <el-progress :percentage="gpu.gpu_util" :format="setNone(gpu)"></el-progress>
+              </div>
+              <div class="box_right">
+                {{gpu.gpu_util}}%
+              </div>
+            </div>
+            <div class="box">
+              <div class="box_left">
+                <el-progress :percentage="gpu.vram_util" :format="setNone(gpu)"></el-progress>
+              </div>
+              <div class="box_right">
+                {{gpu.vram_status}}
+              </div>
+            </div>
           </div>
-          <el-button class="bottom" type="primary" plain href="info.ip">
-            <a :href="'http://' + info.ip + ':8888'">Enter Jupyter</a>
-          </el-button>
         </el-card>
       </el-col>
     </el-row>
-
-
-
   </div>
 </body>
 <!-- import Vue before Element -->
@@ -54,6 +63,7 @@
 
   .gpu_info {
     margin: 15px;
+    text-align: left;
   }
 
   .bottom {
@@ -80,8 +90,26 @@
   .clearfix:after {
     clear: both
   }
+
+  .box {
+    display: flex;
+    flex-direction: row;
+    padding-top: 5px;
+  }
+
+  .box_left {
+    width: 75%;
+  }
+
+  .box_right {
+    flex: 1;
+  }
+
+  .el-progress-bar {
+    padding-right: 10px;
+  }
 </style>
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script>
@@ -92,12 +120,23 @@
     },
     methods: {
       getActMap: function () {
+        console.log("1")
         let url = 'api/gpu'
         $.get(url, res => {
           this.gpu_data = Object.assign({}, this.gpu_data, JSON.parse(res))
         }
         )
-      }
+      },
+      setNone(data) {
+        return () => {
+          return ""
+        }
+      },
+      setVramStatus(data) {
+        return () => {
+          return data
+        }
+      },
     },
     mounted() {
       this.getActMap()
