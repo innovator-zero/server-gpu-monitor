@@ -3,6 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="Keywords" content="">
+  <title>LHTSERVER GPUS MONITOR</title>
   <!-- import CSS -->
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 
@@ -10,18 +14,27 @@
 
 <body>
   <div id="app">
+    <div class="head">
+      Welcome to lhtserver gpus monitor!
+    </div>
     <el-row>
       <el-col :span="6" v-for="(info, host) of gpu_data">
         <el-card class="gpu_card">
           <div class="gpu_infos">
             <h2>{{ info.host }}</h2>
-            <p class="time">{{ info._date }}</p>
+            <p class="time">{{ info.time_stamp }}</p>
           </div>
           <div v-for="(gpu, gpu_index) of info.gpu_info" class="gpu_info">
-            GPU{{gpu_index}}: {{gpu.name}}<br>
+            <div class="gpu_name">
+              GPU{{gpu_index}}: {{gpu.name}}<br>
+            </div>
             <div class="box">
               <div class="box_left">
-                <el-progress :percentage="gpu.gpu_util" :format="setNone(gpu)"></el-progress>
+                UTL:
+              </div>
+              <div class="box_middle">
+                <el-progress :percentage="gpu.gpu_util" :format="setNone(gpu)" :color="setProgressColor">
+                </el-progress>
               </div>
               <div class="box_right">
                 {{gpu.gpu_util}}%
@@ -29,7 +42,11 @@
             </div>
             <div class="box">
               <div class="box_left">
-                <el-progress :percentage="gpu.vram_util" :format="setNone(gpu)"></el-progress>
+                VRAM:
+              </div>
+              <div class="box_middle">
+                <el-progress :percentage="gpu.vram_util" :format="setNone(gpu)" :color="setProgressColor">
+                </el-progress>
               </div>
               <div class="box_right">
                 {{gpu.vram_status}}
@@ -51,6 +68,12 @@
     text-decoration: none
   }
 
+  .head {
+    font-size: 40px;
+    font-weight: 700;
+    text-align: center;
+  }
+
   .time {
     font-size: 13px;
     color: #999;
@@ -64,6 +87,10 @@
   .gpu_info {
     margin: 15px;
     text-align: left;
+  }
+
+  .gpu_name {
+    font-weight: 700;
   }
 
   .bottom {
@@ -98,7 +125,11 @@
   }
 
   .box_left {
-    width: 75%;
+    width: 15%;
+  }
+
+  .box_middle {
+    width: 50%;
   }
 
   .box_right {
@@ -132,9 +163,13 @@
           return ""
         }
       },
-      setVramStatus(data) {
-        return () => {
-          return data
+      setProgressColor(percentage) {
+        if (percentage > 90) {
+          return "#ff1200"
+        } else if (percentage > 70) {
+          return "#ff7800"
+        } else {
+          return "#0e62ff"
         }
       },
     },
