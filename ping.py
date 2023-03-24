@@ -1,6 +1,5 @@
 import json
 import os
-import socket
 import time
 
 import pynvml
@@ -30,12 +29,19 @@ def get_gpu_info():
     return gpu_info
 
 
-if __name__ == "__main__":
+def get_body():
     body = {'host': host, 'gpu_nums': gpu_nums, 'gpu_info': {}, 'time_stamp': None}
+    body['gpu_info'] = get_gpu_info()
+    body['time_stamp'] = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    return body
+
+
+if __name__ == "__main__":
+
     error_count = 0
     while True:
-        body['gpu_info'] = get_gpu_info()
-        body['time_stamp'] = time.strftime("%Y-%m-%d %H:%M:%S")
+        body = get_body()
         success = False
         try:
             res = requests.post(target, json.dumps(body))
