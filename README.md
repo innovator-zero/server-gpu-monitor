@@ -2,7 +2,7 @@
 
 This repo is a simple python script to monitor multiple servers.
 
-<img src="images/image-20230513195957237.png" alt="image-20230513195957237" style="zoom:50%;" />
+<img src="images/image-20230513195957237.png" alt="image-20230513195957237" width="400" />
 
 ## Information Displayed
 
