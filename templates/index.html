@@ -18,10 +18,10 @@
       Welcome to server monitor!
     </div>
     <el-row>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6" v-for="(info, host) of gpu_data">
+      <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6" v-for="(info, client) of gpu_data">
         <el-card class="server_card">
           <div>
-            <h2>{{ info.host }}</h2>
+            <h2>{{ info.client }}</h2>
             <h4 v-if="info.status=='ONLINE'" style="color: green;">{{info.status}}</h4>
             <h4 v-else style="color: red;">{{info.status}}</h4>
             <p class="time">{{ info.time_stamp }}</p>
