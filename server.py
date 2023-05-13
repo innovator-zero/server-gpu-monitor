@@ -3,8 +3,8 @@ import os
 import time
 
 import yaml
-import pynvml
 from flask import Flask, request, send_file
+
 from ping import get_body
 
 with open(os.path.join(os.path.split(__file__)[0], 'config.yaml')) as f:
@@ -14,10 +14,7 @@ app = Flask(__name__)
 
 act_map = {}
 
-pynvml.nvmlInit()
-host = config['host']
-gpu_nums = pynvml.nvmlDeviceGetCount()
-handle_list = [pynvml.nvmlDeviceGetHandleByIndex(i) for i in range(gpu_nums)]
+client = config['client']
 
 
 @app.route('/')
@@ -25,20 +22,20 @@ def index():
     return send_file('templates/index.html')
 
 
-@app.route('/api/gpu', methods=['GET'])
-def gpu():
+@app.route('/api/monitor', methods=['GET'])
+def monitor():
+    # get itself info
     global act_map
-    # get info of itself
-    act_map[host] = get_body()
-
-    # check whether info is valid
+    act_map[client] = get_body()
     if act_map:
         for key, value in act_map.items():
             time_str = value['time_stamp']
             time_stamp = time.mktime(time.strptime(time_str, "%Y-%m-%d %H:%M:%S"))
             # disconnect over 1 minute
             if time.time() - time_stamp > 60:
-                del value['gpu_info']
+                value['status'] = 'OFFLINE'
+            else:
+                value['status'] = 'ONLINE'
 
         act_map = dict(sorted(act_map.items()))
     return json.dumps(act_map)
@@ -50,10 +47,10 @@ def ping():
     if request.method == 'POST':
         data = request.get_data()
         data = json.loads(data.decode())
-        if not data.get('host'):
+        if not data.get('client'):
             body = 1
         else:
-            act_map[data['host']] = data
+            act_map[data['client']] = data
     return str(body)
 
 

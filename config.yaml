@@ -1,6 +1,8 @@
-center:
-  ip: 192.168.0.2
-  port: 6060
+# Info of server
+server:
+  ip: 192.168.0.1
+  port: 8080
 
-host: server1
+# Name of this client
+client: server1
 

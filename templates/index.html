@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="Keywords" content="">
-  <title>LHTSERVER GPUS MONITOR</title>
+  <title>SERVER MONITOR</title>
   <!-- import CSS -->
   <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 
@@ -14,93 +14,190 @@
 
 <body>
   <div id="app">
-    <div class="head">
-      Welcome to lhtserver gpus monitor!
+    <div class="headline">
+      Welcome to server monitor!
     </div>
     <el-row>
-      <el-col :span="6" v-for="(info, host) of gpu_data">
-        <el-card class="gpu_card">
-          <div class="gpu_infos">
+      <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="6" v-for="(info, host) of gpu_data">
+        <el-card class="server_card">
+          <div>
             <h2>{{ info.host }}</h2>
+            <h4 v-if="info.status=='ONLINE'" style="color: green;">{{info.status}}</h4>
+            <h4 v-else style="color: red;">{{info.status}}</h4>
             <p class="time">{{ info.time_stamp }}</p>
-          </div>
-          <div v-for="(gpu, gpu_index) of info.gpu_info" class="gpu_info">
-            <div class="gpu_name">
-              GPU{{gpu_index}}: {{gpu.name}}<br>
+            <div class="cpumem_info">
+              <div class="box">
+                <div class="box_left">
+                  <div class="item_title">
+                    CPU({{info.cpu_info.core}}C/{{info.cpu_info.thread}}T):
+                  </div>
+                </div>
+                <div class="box_middle">
+                  <el-progress :percentage="info.cpu_info.util" :format="setNone(info.cpu_info)"
+                    :color="setProgressColor">
+                  </el-progress>
+                </div>
+                <div class="box_right">
+                  {{info.cpu_info.util}}% ({{info.cpu_info.temp}}C)
+                </div>
+              </div>
+              <div class="box">
+                <div class="box_left">
+                  <div class="item_title">
+                    MEM:
+                  </div>
+                </div>
+                <div class="box_middle">
+                  <el-progress :percentage="info.mem_info.util" :format="setNone(info.mem_info)"
+                    :color="setProgressColor">
+                  </el-progress>
+                </div>
+                <div class="box_right">
+                  {{info.mem_info.status}}
+                </div>
+              </div>
             </div>
-            <div class="box">
-              <div class="box_left">
-                UTL:
+            <div v-for="(gpu, gpu_index) of info.gpu_info" class="gpu_info">
+              <div class="item_title">
+                GPU{{gpu_index}}: {{gpu.name}}<br>
               </div>
-              <div class="box_middle">
-                <el-progress :percentage="gpu.gpu_util" :format="setNone(gpu)" :color="setProgressColor">
-                </el-progress>
+              <div class="box">
+                <div class="box_left">
+                  UTL:
+                </div>
+                <div class="box_middle">
+                  <el-progress :percentage="gpu.gpu_util" :format="setNone(gpu)" :color="setProgressColor">
+                  </el-progress>
+                </div>
+                <div class="box_right">
+                  {{gpu.gpu_util}}% ({{gpu.temp}}C)
+                </div>
               </div>
-              <div class="box_right">
-                {{gpu.gpu_util}}%
+              <div class="box">
+                <div class="box_left">
+                  VRAM:
+                </div>
+                <div class="box_middle">
+                  <el-progress :percentage="gpu.vram_util" :format="setNone(gpu)" :color="setProgressColor">
+                  </el-progress>
+                </div>
+                <div class="box_right">
+                  {{gpu.vram_status}}
+                </div>
               </div>
             </div>
-            <div class="box">
-              <div class="box_left">
-                VRAM:
+            <div class="disk_info">
+              <div class="item_title">
+                Disk Usage<br>
               </div>
-              <div class="box_middle">
-                <el-progress :percentage="gpu.vram_util" :format="setNone(gpu)" :color="setProgressColor">
-                </el-progress>
-              </div>
-              <div class="box_right">
-                {{gpu.vram_status}}
+            </div>
+            <div v-for="(disk, disk_index) of info.disk_info" class="disk_info">
+              <div class="box2">
+                <div class="box_left">
+                  "{{disk_index}}":
+                </div>
+                <div class="box_middle">
+                  <el-progress :percentage="disk.util" :format="setNone(disk)" :color="setProgressColor">
+                  </el-progress>
+                </div>
+                <div class="box_right">
+                  {{disk.status}}
+                </div>
               </div>
             </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
+    <el-footer>
+      <div class="copyright">
+        © <a href="https://github.com/innovator-zero/server-monitor">innovator-zero</a>, 2023. All rights reserved.
+      </div>
+    </el-footer>
+
   </div>
 </body>
 <!-- import Vue before Element -->
 <style>
   body {
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    font-size: 1.5vmin;
   }
 
   a {
     text-decoration: none
   }
 
-  .head {
-    font-size: 40px;
+  .headline {
+    font-size: 3vmin;
     font-weight: 700;
+    text-align: center;
+  }
+
+  .server_card {
+    margin: 0.5vmin;
     text-align: center;
   }
 
   .time {
-    font-size: 13px;
+    font-size: 1.4vmin;
     color: #999;
   }
 
-  .gpu_card {
-    margin: 15px;
-    text-align: center;
-  }
-
-  .gpu_info {
-    margin: 15px;
+  .item_title {
+    font-weight: 700;
     text-align: left;
   }
 
-  .gpu_name {
-    font-weight: 700;
+  .cpumem_info {
+    margin: 1vmin;
+    text-align: left;
+  }
+
+  .gpu_info {
+    margin: 1vmin;
+    text-align: left;
+  }
+
+  .disk_info {
+    margin: 0.5vmin;
+    margin-left: 1vmin;
+    margin-right: 1vmin;
+    text-align: left;
+  }
+
+  .box {
+    display: flex;
+    flex-direction: row;
+    padding-top: 0.5vmin;
+  }
+
+  .box2 {
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    margin: 0;
+  }
+
+  .box_left {
+    width: 27%;
+  }
+
+  .box_middle {
+    width: 40%;
+  }
+
+  .box_right {
+    flex: 1,
+  }
+
+  .el-progress-bar {
+    padding-right: 2vmin;
   }
 
   .bottom {
     margin-top: 13px;
     line-height: 12px;
-  }
-
-  .button {
-    padding: 0;
-    float: right;
   }
 
   .image {
@@ -118,26 +215,11 @@
     clear: both
   }
 
-  .box {
-    display: flex;
-    flex-direction: row;
-    padding-top: 5px;
-  }
-
-  .box_left {
-    width: 15%;
-  }
-
-  .box_middle {
-    width: 50%;
-  }
-
-  .box_right {
-    flex: 1;
-  }
-
-  .el-progress-bar {
-    padding-right: 10px;
+  .copyright {
+    font-size: 1vmin;
+    color: #999;
+    text-align: center;
+    padding: 10px 0;
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -152,7 +234,7 @@
     methods: {
       getActMap: function () {
         console.log("1")
-        let url = 'api/gpu'
+        let url = 'api/monitor'
         $.get(url, res => {
           this.gpu_data = Object.assign({}, this.gpu_data, JSON.parse(res))
         }

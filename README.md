@@ -1,43 +1,61 @@
-# gpu-watcher
+# server-monitor
 
-![mark](http://cdn.iblue.tech/img/20191024/XCGoYOOFxAnG.png?imageslim)
+This repo is a simple python script to monitor multiple servers.
 
-## 依赖
+![image-20230513195957237](images/image-20230513195957237.png)
 
-python3
+## Information Displayed
+
+**CPU**: Cores, Threads, Utilization, Temperature
+
+**Memory**: Utilization
+
+**GPUs**: Model Name, Utilization, VRAM Utilization, Temperature 
+
+**Disks**: Usage
+
+## Dependency
+
+Python3
 
 client:
-```bash
-pip install yaml pynvml
+```
+psutil pynvml yaml
 ```
 
 server:
-```bash
-pip install yaml pynvml flask
+```
+flask psutil pynvml yaml
 ```
 
-## 使用方式
+## Usage
 
-修改 `config.yaml`
+#### Modify `config.yaml`
 
 ```yaml
-lab:
-  center:
-    ip: 202.204.62.145 // 中心节点的ip和端口（汇总GPU信息用）
-    port: 80
-
-local:
-  host: G1_4GTX1080Ti // 本机hostname（在看板上的名称）
-```
-
-client：
-
-```bash
-nohup python ping.py &
-```
-
+# Info of server
 server:
+  ip: 192.168.0.1
+  port: 8080
+
+# Name of this client
+client: server1
+```
+
+#### Client
 
 ```bash
-nohup python server.py &
+python ping.py
 ```
+
+#### Server
+
+```bash
+python server.py
+```
+
+You can use it with `nohup` or `screen`.
+
+Then you can monitor on website `ip:port`.
+
+It is recommended to use WSGI to run server. 
