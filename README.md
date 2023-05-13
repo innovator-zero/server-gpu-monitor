@@ -1,6 +1,6 @@
 # server-monitor
 
-This repo is a simple python script to monitor multiple servers.
+This repo is a simple python script to run a webpage to monitor multiple servers.
 
 <img src="images/image-20230513195957237.png" alt="image-20230513195957237" width="400" />
 
@@ -59,3 +59,7 @@ You can use it with `nohup` or `screen`.
 Then you can monitor on website `ip:port`.
 
 It is recommended to use WSGI to run server. 
+
+## Acknowledgement
+
+This project is extended from [gpu-watcher](https://github.com/Bingmang/gpu-watcher).
