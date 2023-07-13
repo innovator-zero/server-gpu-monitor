@@ -55,4 +55,4 @@ def ping():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(config['center']['port']))
+    app.run(host='0.0.0.0', port=int(config['server']['port']))
